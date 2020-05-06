@@ -1,0 +1,9 @@
+server: beanstalkd.common:11300
+debug: false
+subscribers:
+  - tube: debade
+    callbacks:
+      - type: jsonrpc
+        url: http://demo.local/api
+        method: demo/getNotified
+        secret: 83719730

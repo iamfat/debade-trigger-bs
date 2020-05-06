@@ -11,16 +11,17 @@ const client = bs.Client(config.server);
     client.reserve().onSuccess(async (job) => {
       console.debug(`tube[${tube}]: <= ${job.id}`);
       await Promise.all(
-        callbacks.forEach(async ({ type, ...rest }) => {
+        callbacks.map(async ({ type, ...rest }) => {
           if (type === 'jsonrpc') {
             try {
               const data = JSON.parse(job.data);
-              const body = new Buffer(
+              const body = Buffer.from(
                 JSON.stringify({
                   jsonrpc: '2.0',
                   method: rest.method,
                   params: [data],
                 }),
+                'utf8',
               );
               await fetch(rest.url, {
                 method: 'POST',
@@ -31,7 +32,7 @@ const client = bs.Client(config.server);
               });
             } catch {}
           } else if (type === 'rest') {
-            const body = new Buffer(job.data);
+            const body = Buffer.from(job.data, 'utf8');
             try {
               await fetch(rest.url, {
                 method: 'POST',

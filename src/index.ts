@@ -5,8 +5,9 @@ import { createHmac } from 'crypto';
 
 console.log('>> DeBaDe Beanstalk Trigger <<');
 
-const client = bs.Client(config.server);
 (config.subscribers || []).forEach(({ tube, callbacks }) => {
+  const client = bs.Client(config.server);
+
   const reserveJob = () => {
     client.reserve().onSuccess(async (job) => {
       console.debug(`tube[${tube}]: <= ${job.id}`);
@@ -26,7 +27,7 @@ const client = bs.Client(config.server);
               await fetch(rest.url, {
                 method: 'POST',
                 headers: {
-                  'X-DeBaDe-Token': createHmac('sha1', rest.secret).update(body).digest('base64'),
+                  'X-DeBaDe-Token': createHmac('sha1', String(rest.secret)).update(body).digest('base64'),
                 },
                 body,
               });
@@ -38,7 +39,7 @@ const client = bs.Client(config.server);
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json;charset=UTF-8',
-                  'X-DeBaDe-Token': createHmac('sha1', rest.secret).update(body).digest('base64'),
+                  'X-DeBaDe-Token': createHmac('sha1', String(rest.secret)).update(body).digest('base64'),
                 },
                 body,
               });
